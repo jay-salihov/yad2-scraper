@@ -1,0 +1,9 @@
+output/
+.git/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+.idea/
+.vscode/

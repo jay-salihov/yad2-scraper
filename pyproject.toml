@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yad2-scraper"
+version = "0.1.0"
+description = "Scrape used car listings from yad2.co.il and export to CSV"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx[http2]>=0.27",
+    "beautifulsoup4>=4.12",
+]
+
+[project.scripts]
+yad2-scraper = "yad2_scraper.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
