@@ -132,45 +132,37 @@ class TestBotDetection:
             route.calls.clear()
 
 
+@patch("yad2_scraper.fetcher.time.sleep")
 @pytest.mark.unit
 class TestRateLimiting:
     """Test rate limiting and delays."""
 
     @respx.mock
-    def test_no_delay_on_first_request(self):
+    def test_no_delay_on_first_request(self, mock_sleep):
         """Should not delay before first request."""
-        import time
-
         respx.get("https://www.yad2.co.il/vehicles/cars").mock(
             return_value=httpx.Response(200, text="<html></html>")
         )
 
         fetcher = Fetcher()
-        start = time.time()
         fetcher.fetch_page(1)
-        elapsed = time.time() - start
 
-        # Should complete quickly (< 1 second for first request)
-        assert elapsed < 1.0
+        mock_sleep.assert_not_called()
 
     @respx.mock
-    def test_rate_limiting_delays_requests(self):
+    def test_rate_limiting_delays_requests(self, mock_sleep):
         """Should delay between subsequent requests."""
-        import time
-
         respx.get("https://www.yad2.co.il/vehicles/cars").mock(
             return_value=httpx.Response(200, text="<html></html>")
         )
 
         fetcher = Fetcher()
         fetcher.fetch_page(1)  # First request - no delay
-
-        start = time.time()
         fetcher.fetch_page(2)  # Second request - should have delay
-        elapsed = time.time() - start
 
-        # Should have at least DELAY_MIN (3 seconds) delay
-        assert elapsed >= 3.0
+        mock_sleep.assert_called_once()
+        delay = mock_sleep.call_args[0][0]
+        assert 3.0 <= delay <= 7.0
 
 
 @pytest.mark.unit
