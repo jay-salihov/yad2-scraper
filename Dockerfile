@@ -12,8 +12,7 @@ COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/pytho
 COPY src/ src/
 
 RUN useradd --create-home scraper
+RUN mkdir -p /app/output && chown scraper:scraper /app/output
 USER scraper
-
-RUN mkdir -p /app/output
 
 ENTRYPOINT ["python", "-m", "yad2_scraper"]

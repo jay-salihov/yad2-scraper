@@ -1,6 +1,7 @@
 """Integration tests for end-to-end scraping flow (Issue 1)."""
 
 import json
+from unittest.mock import MagicMock, patch
 
 import httpx
 import pytest
@@ -300,12 +301,9 @@ class TestScrapingEdgeCases:
         # Should have made exactly 2 requests
         assert route.call_count == 2
 
-    @respx.mock
     def test_keyboard_interrupt_exports_partial_results(self, tmp_path, monkeypatch):
         """Should export partial results when interrupted."""
         monkeypatch.setattr("yad2_scraper.exporter.OUTPUT_DIR", str(tmp_path))
-
-        route = respx.get("https://www.yad2.co.il/vehicles/cars")
 
         next_data = {
             "props": {
@@ -333,15 +331,13 @@ class TestScrapingEdgeCases:
 <script id="__NEXT_DATA__" type="application/json">{json.dumps(next_data)}</script>
 </body></html>"""
 
-        # First request succeeds, second raises KeyboardInterrupt
-        route.mock(
-            side_effect=[
-                httpx.Response(200, text=html),
-                KeyboardInterrupt(),
-            ]
-        )
+        # Mock Fetcher so first call returns HTML, second raises KeyboardInterrupt
+        with patch("yad2_scraper.__main__.Fetcher") as mock_fetcher_class:
+            mock_fetcher = MagicMock()
+            mock_fetcher_class.return_value.__enter__.return_value = mock_fetcher
+            mock_fetcher.fetch_page.side_effect = [html, KeyboardInterrupt()]
 
-        main(["--max-pages", "10"])
+            main(["--max-pages", "10"])
 
         # Should have created CSV with partial results
         csv_files = list(tmp_path.glob("yad2_cars_*.csv"))

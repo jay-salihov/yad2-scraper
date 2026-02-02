@@ -95,12 +95,12 @@ class TestIssue10VerboseLogging:
 
             # If verbose is implemented correctly, these should not be DEBUG
             # Currently this test will FAIL because basicConfig sets root logger
-            assert (
-                httpcore_logger.getEffectiveLevel() > logging.DEBUG
-            ), "httpcore logger should not be at DEBUG level"
-            assert (
-                httpx_logger.getEffectiveLevel() > logging.DEBUG
-            ), "httpx logger should not be at DEBUG level"
+            assert httpcore_logger.getEffectiveLevel() > logging.DEBUG, (
+                "httpcore logger should not be at DEBUG level"
+            )
+            assert httpx_logger.getEffectiveLevel() > logging.DEBUG, (
+                "httpx logger should not be at DEBUG level"
+            )
 
 
 @pytest.mark.integration
@@ -230,9 +230,9 @@ class TestLoggingFormat:
             with pytest.raises(SystemExit):
                 main(["--max-pages", "1"])
 
-            # Root logger should be at INFO level by default
-            root_logger = logging.getLogger()
-            assert root_logger.level == logging.INFO
+            # yad2_scraper logger should be at INFO level by default
+            yad2_logger = logging.getLogger("yad2_scraper")
+            assert yad2_logger.level == logging.INFO
 
 
 @pytest.mark.integration

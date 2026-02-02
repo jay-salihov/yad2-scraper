@@ -67,7 +67,7 @@ def parse_listings(html: str) -> PageResult:
     # Listings from both commercial and private arrays
     listings: list[CarListing] = []
 
-    for ad_type in ("commercial", "private"):
+    for ad_type in ("commercial", "private", "platinum", "boost", "solo"):
         raw_items = state_data.get(ad_type, [])
         for item in raw_items:
             if not isinstance(item, dict) or not item.get("token"):

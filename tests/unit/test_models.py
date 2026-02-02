@@ -233,7 +233,7 @@ class TestCSVSerialization:
         assert "model" in header
         assert "year" in header
         assert "price" in header
-        assert len(header) == 29  # Total number of fields
+        assert len(header) == 31  # Total number of fields
 
     def test_csv_row_all_strings(self, sample_listing_complete):
         """CSV row should convert all values to strings."""
