@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import random
 import time
+from urllib.parse import urlencode
 
 import httpx
 
@@ -60,10 +61,14 @@ class Fetcher:
         self._first_request = False
 
         params = {**DEFAULT_SEARCH_PARAMS, "page": str(page)}
+        # Build query string manually so commas in values (e.g. engineType)
+        # stay literal instead of being percent-encoded to %2C by httpx.
+        # Yad2 returns 404 when commas are encoded.
+        url = f"{BASE_URL}?{urlencode(params, safe=',')}"
 
         for attempt in range(BACKOFF_MAX_RETRIES + 1):
             log.debug("Fetching page %d (attempt %d)", page, attempt + 1)
-            resp = self._client.get(BASE_URL, params=params)
+            resp = self._client.get(url)
 
             if resp.status_code == 200:
                 return resp.text
