@@ -1,8 +1,10 @@
 """Integration tests for CLI arguments and logging (Issue 10)."""
 
 import logging
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
+
 from yad2_scraper.__main__ import main
 
 
@@ -48,7 +50,10 @@ class TestIssue10VerboseLogging:
 
             # Check that yad2_scraper logger is set to DEBUG
             yad2_logger = logging.getLogger("yad2_scraper")
-            assert yad2_logger.level == logging.DEBUG or yad2_logger.getEffectiveLevel() == logging.DEBUG
+            assert (
+                yad2_logger.level == logging.DEBUG
+                or yad2_logger.getEffectiveLevel() == logging.DEBUG
+            )
 
     def test_verbose_does_not_flood_with_httpcore_logs(self, tmp_path, caplog, monkeypatch):
         """Verbose mode should not flood with httpcore debug messages."""
@@ -81,9 +86,8 @@ class TestIssue10VerboseLogging:
 }</script>
 </body></html>"""
 
-            with caplog.at_level(logging.DEBUG):
-                with pytest.raises(SystemExit):
-                    main(["--verbose", "--max-pages", "1"])
+            with caplog.at_level(logging.DEBUG), pytest.raises(SystemExit):
+                main(["--verbose", "--max-pages", "1"])
 
             # httpcore and httpx loggers should NOT be at DEBUG level
             httpcore_logger = logging.getLogger("httpcore")
@@ -91,10 +95,12 @@ class TestIssue10VerboseLogging:
 
             # If verbose is implemented correctly, these should not be DEBUG
             # Currently this test will FAIL because basicConfig sets root logger
-            assert httpcore_logger.getEffectiveLevel() > logging.DEBUG, \
-                "httpcore logger should not be at DEBUG level"
-            assert httpx_logger.getEffectiveLevel() > logging.DEBUG, \
-                "httpx logger should not be at DEBUG level"
+            assert (
+                httpcore_logger.getEffectiveLevel() > logging.DEBUG
+            ), "httpcore logger should not be at DEBUG level"
+            assert (
+                httpx_logger.getEffectiveLevel() > logging.DEBUG
+            ), "httpx logger should not be at DEBUG level"
 
 
 @pytest.mark.integration
@@ -141,7 +147,6 @@ class TestCLIArguments:
     def test_no_max_pages_defaults_to_none(self):
         """Should default to None when --max-pages not specified."""
         import argparse
-        from yad2_scraper.__main__ import main
 
         # Parse args without calling main
         parser = argparse.ArgumentParser()
@@ -186,9 +191,8 @@ class TestLoggingFormat:
 }</script>
 </body></html>"""
 
-            with caplog.at_level(logging.INFO):
-                with pytest.raises(SystemExit):
-                    main(["--max-pages", "1"])
+            with caplog.at_level(logging.INFO), pytest.raises(SystemExit):
+                main(["--max-pages", "1"])
 
             # Should have log messages
             assert len(caplog.records) > 0

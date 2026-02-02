@@ -1,8 +1,10 @@
 """Unit tests for CSV export and deduplication."""
 
 import csv
-import pytest
 from pathlib import Path
+
+import pytest
+
 from yad2_scraper.exporter import export_csv
 from yad2_scraper.models import CarListing
 
@@ -30,7 +32,7 @@ class TestCSVExport:
         listing = CarListing.from_raw(sample_listing_complete, "commercial")
         filepath = export_csv([listing])
 
-        with open(filepath, "r", encoding="utf-8-sig") as f:
+        with open(filepath, encoding="utf-8-sig") as f:
             reader = csv.reader(f)
             header = next(reader)
 
@@ -46,7 +48,7 @@ class TestCSVExport:
         listing = CarListing.from_raw(sample_listing_complete, "commercial")
         filepath = export_csv([listing])
 
-        with open(filepath, "r", encoding="utf-8-sig") as f:
+        with open(filepath, encoding="utf-8-sig") as f:
             reader = csv.reader(f)
             next(reader)  # Skip header
             rows = list(reader)
@@ -69,7 +71,7 @@ class TestDeduplication:
 
         filepath = export_csv([listing1, listing2, listing3])
 
-        with open(filepath, "r", encoding="utf-8-sig") as f:
+        with open(filepath, encoding="utf-8-sig") as f:
             reader = csv.reader(f)
             next(reader)  # Skip header
             rows = list(reader)
@@ -77,8 +79,9 @@ class TestDeduplication:
         # Should only have 1 row despite 3 identical listings
         assert len(rows) == 1
 
-    def test_export_csv_preserves_order(self, tmp_path, sample_listing_complete,
-                                        sample_listing_minimal, monkeypatch):
+    def test_export_csv_preserves_order(
+        self, tmp_path, sample_listing_complete, sample_listing_minimal, monkeypatch
+    ):
         """Should preserve order of first occurrence."""
         monkeypatch.setattr("yad2_scraper.exporter.OUTPUT_DIR", str(tmp_path))
 
@@ -88,7 +91,7 @@ class TestDeduplication:
 
         filepath = export_csv([listing1, listing2, listing3])
 
-        with open(filepath, "r", encoding="utf-8-sig") as f:
+        with open(filepath, encoding="utf-8-sig") as f:
             reader = csv.reader(f)
             next(reader)  # Skip header
             rows = list(reader)
@@ -108,7 +111,7 @@ class TestDeduplication:
 
         filepath = export_csv([listing_no_token, listing_with_token])
 
-        with open(filepath, "r", encoding="utf-8-sig") as f:
+        with open(filepath, encoding="utf-8-sig") as f:
             reader = csv.reader(f)
             next(reader)  # Skip header
             rows = list(reader)
@@ -134,7 +137,7 @@ class TestEncoding:
             first_bytes = f.read(3)
 
         # UTF-8 BOM is 0xEF 0xBB 0xBF
-        assert first_bytes == b'\xef\xbb\xbf'
+        assert first_bytes == b"\xef\xbb\xbf"
 
     def test_export_csv_handles_hebrew_text(self, tmp_path, sample_listing_complete, monkeypatch):
         """Should correctly write Hebrew characters."""
@@ -143,7 +146,7 @@ class TestEncoding:
         listing = CarListing.from_raw(sample_listing_complete, "commercial")
         filepath = export_csv([listing])
 
-        with open(filepath, "r", encoding="utf-8-sig") as f:
+        with open(filepath, encoding="utf-8-sig") as f:
             content = f.read()
 
         # Hebrew text should be present
@@ -191,7 +194,7 @@ class TestEdgeCases:
 
         assert filepath.exists()
 
-        with open(filepath, "r", encoding="utf-8-sig") as f:
+        with open(filepath, encoding="utf-8-sig") as f:
             reader = csv.reader(f)
             header = next(reader)
             rows = list(reader)

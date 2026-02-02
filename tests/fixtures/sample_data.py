@@ -13,26 +13,14 @@ LISTING_COMPLETE = {
     "engineVolume": "1200",
     "hand": {"id": 1, "text": "יד ראשונה"},
     "handNumber": "1",
-    "address": {
-        "area": {"id": 5, "text": "תל אביב והמרכז"}
-    },
+    "address": {"area": {"id": 5, "text": "תל אביב והמרכז"}},
     "metaData": {
-        "images": [
-            "https://example.com/img1.jpg",
-            "https://example.com/img2.jpg"
-        ],
-        "coverImage": "https://example.com/cover.jpg"
+        "images": ["https://example.com/img1.jpg", "https://example.com/img2.jpg"],
+        "coverImage": "https://example.com/cover.jpg",
     },
-    "tags": [
-        {"name": "חסכוני", "id": 11, "priority": 1}
-    ],
-    "customer": {
-        "agencyName": "מוסך דוד",
-        "id": "agency-123"
-    },
-    "packages": {
-        "isTradeInButton": True
-    },
+    "tags": [{"name": "חסכוני", "id": 11, "priority": 1}],
+    "customer": {"agencyName": "מוסך דוד", "id": "agency-123"},
+    "packages": {"isTradeInButton": True},
     "priority": "5",
     "kilometers": "45000",
     "color": {"id": 7, "text": "שחור"},
@@ -75,10 +63,7 @@ LISTING_AGENCY = {
     "price": "50000",
     "manufacturer": {"id": 20, "text": "מרצדס"},
     "model": {"id": 300, "text": "C-Class"},
-    "customer": {
-        "agencyName": "יוקרה מוטורס",
-        "id": "agency-456"
-    },
+    "customer": {"agencyName": "יוקרה מוטורס", "id": "agency-456"},
 }
 
 # Listing without agency (private seller)
@@ -88,9 +73,7 @@ LISTING_PRIVATE = {
     "price": "35000",
     "manufacturer": {"id": 25, "text": "מאזדה"},
     "model": {"id": 400, "text": "3"},
-    "customer": {
-        "id": "private-789"
-    },
+    "customer": {"id": "private-789"},
 }
 
 # Listing with multiple tags
@@ -122,19 +105,21 @@ NEXT_DATA_WITH_ALL_ARRAYS = {
     "props": {
         "pageProps": {
             "dehydratedState": {
-                "queries": [{
-                    "queryKey": ["feed", "vehicles", "search"],
-                    "state": {
-                        "data": {
-                            "commercial": [LISTING_COMPLETE],
-                            "private": [LISTING_MINIMAL],
-                            "platinum": [LISTING_AGENCY],
-                            "boost": [LISTING_PRIVATE],
-                            "solo": [LISTING_WITH_TAGS],
-                            "pagination": {"pages": 35, "total": 1347}
-                        }
+                "queries": [
+                    {
+                        "queryKey": ["feed", "vehicles", "search"],
+                        "state": {
+                            "data": {
+                                "commercial": [LISTING_COMPLETE],
+                                "private": [LISTING_MINIMAL],
+                                "platinum": [LISTING_AGENCY],
+                                "boost": [LISTING_PRIVATE],
+                                "solo": [LISTING_WITH_TAGS],
+                                "pagination": {"pages": 35, "total": 1347},
+                            }
+                        },
                     }
-                }]
+                ]
             }
         }
     }
@@ -145,16 +130,18 @@ NEXT_DATA_MISSING_ARRAYS = {
     "props": {
         "pageProps": {
             "dehydratedState": {
-                "queries": [{
-                    "queryKey": ["feed", "vehicles", "search"],
-                    "state": {
-                        "data": {
-                            "commercial": [LISTING_COMPLETE, LISTING_AGENCY],
-                            "private": [LISTING_MINIMAL, LISTING_PRIVATE],
-                            "pagination": {"pages": 35, "total": 1347}
-                        }
+                "queries": [
+                    {
+                        "queryKey": ["feed", "vehicles", "search"],
+                        "state": {
+                            "data": {
+                                "commercial": [LISTING_COMPLETE, LISTING_AGENCY],
+                                "private": [LISTING_MINIMAL, LISTING_PRIVATE],
+                                "pagination": {"pages": 35, "total": 1347},
+                            }
+                        },
                     }
-                }]
+                ]
             }
         }
     }
@@ -165,28 +152,32 @@ NEXT_DATA_EMPTY_ARRAYS = {
     "props": {
         "pageProps": {
             "dehydratedState": {
-                "queries": [{
-                    "queryKey": ["feed", "vehicles", "search"],
-                    "state": {
-                        "data": {
-                            "commercial": [],
-                            "private": [],
-                            "platinum": [],
-                            "boost": [],
-                            "solo": [],
-                            "pagination": {"pages": 0, "total": 0}
-                        }
+                "queries": [
+                    {
+                        "queryKey": ["feed", "vehicles", "search"],
+                        "state": {
+                            "data": {
+                                "commercial": [],
+                                "private": [],
+                                "platinum": [],
+                                "boost": [],
+                                "solo": [],
+                                "pagination": {"pages": 0, "total": 0},
+                            }
+                        },
                     }
-                }]
+                ]
             }
         }
     }
 }
 
+
 # Valid HTML with embedded __NEXT_DATA__
 def create_html_with_next_data(next_data_dict):
     """Create valid HTML with embedded __NEXT_DATA__ JSON."""
     import json
+
     return f"""<!DOCTYPE html>
 <html>
 <head>
@@ -197,6 +188,7 @@ def create_html_with_next_data(next_data_dict):
     <script id="__NEXT_DATA__" type="application/json">{json.dumps(next_data_dict)}</script>
 </body>
 </html>"""
+
 
 SAMPLE_HTML_VALID = create_html_with_next_data(NEXT_DATA_WITH_ALL_ARRAYS)
 

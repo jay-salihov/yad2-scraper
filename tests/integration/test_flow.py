@@ -1,12 +1,12 @@
 """Integration tests for end-to-end scraping flow (Issue 1)."""
 
 import json
-import pytest
+
 import httpx
+import pytest
 import respx
-from unittest.mock import patch
+
 from yad2_scraper.__main__ import main
-from yad2_scraper.fetcher import BotDetectedError
 
 
 @pytest.mark.integration
@@ -32,22 +32,26 @@ class TestIssue1Pagination:
             if page_param == "0":
                 # Page 0 should return 404
                 return httpx.Response(404, text="Not Found")
-            elif page_param == "1":
+            if page_param == "1":
                 # Page 1 returns valid data
                 next_data = {
                     "props": {
                         "pageProps": {
                             "dehydratedState": {
-                                "queries": [{
-                                    "queryKey": ["feed", "vehicles", "search"],
-                                    "state": {
-                                        "data": {
-                                            "commercial": [{"token": "test-123", "price": "50000"}],
-                                            "private": [],
-                                            "pagination": {"pages": 1, "total": 1}
-                                        }
+                                "queries": [
+                                    {
+                                        "queryKey": ["feed", "vehicles", "search"],
+                                        "state": {
+                                            "data": {
+                                                "commercial": [
+                                                    {"token": "test-123", "price": "50000"}
+                                                ],
+                                                "private": [],
+                                                "pagination": {"pages": 1, "total": 1},
+                                            }
+                                        },
                                     }
-                                }]
+                                ]
                             }
                         }
                     }
@@ -57,8 +61,7 @@ class TestIssue1Pagination:
 <script id="__NEXT_DATA__" type="application/json">{json.dumps(next_data)}</script>
 </body></html>"""
                 return httpx.Response(200, text=html)
-            else:
-                return httpx.Response(404, text="Not Found")
+            return httpx.Response(404, text="Not Found")
 
         route.mock(side_effect=custom_response)
 
@@ -89,16 +92,20 @@ class TestIssue1Pagination:
                 "props": {
                     "pageProps": {
                         "dehydratedState": {
-                            "queries": [{
-                                "queryKey": ["feed", "vehicles", "search"],
-                                "state": {
-                                    "data": {
-                                        "commercial": [{"token": f"test-{page_param}", "price": "50000"}],
-                                        "private": [],
-                                        "pagination": {"pages": 10, "total": 100}
-                                    }
+                            "queries": [
+                                {
+                                    "queryKey": ["feed", "vehicles", "search"],
+                                    "state": {
+                                        "data": {
+                                            "commercial": [
+                                                {"token": f"test-{page_param}", "price": "50000"}
+                                            ],
+                                            "private": [],
+                                            "pagination": {"pages": 10, "total": 100},
+                                        }
+                                    },
                                 }
-                            }]
+                            ]
                         }
                     }
                 }
@@ -123,7 +130,9 @@ class TestScrapingFlow:
     """Test full scraping flow."""
 
     @respx.mock
-    def test_full_scraping_flow_with_mocked_responses(self, tmp_path, sample_next_data, monkeypatch):
+    def test_full_scraping_flow_with_mocked_responses(
+        self, tmp_path, sample_next_data, monkeypatch
+    ):
         """Should complete full scraping flow with mocked HTTP responses."""
         monkeypatch.setattr("yad2_scraper.exporter.OUTPUT_DIR", str(tmp_path))
 
@@ -196,16 +205,20 @@ class TestScrapingEdgeCases:
                     "props": {
                         "pageProps": {
                             "dehydratedState": {
-                                "queries": [{
-                                    "queryKey": ["feed", "vehicles", "search"],
-                                    "state": {
-                                        "data": {
-                                            "commercial": [{"token": "test-123", "price": "50000"}],
-                                            "private": [],
-                                            "pagination": {"pages": 10, "total": 100}
-                                        }
+                                "queries": [
+                                    {
+                                        "queryKey": ["feed", "vehicles", "search"],
+                                        "state": {
+                                            "data": {
+                                                "commercial": [
+                                                    {"token": "test-123", "price": "50000"}
+                                                ],
+                                                "private": [],
+                                                "pagination": {"pages": 10, "total": 100},
+                                            }
+                                        },
                                     }
-                                }]
+                                ]
                             }
                         }
                     }
@@ -216,16 +229,18 @@ class TestScrapingEdgeCases:
                     "props": {
                         "pageProps": {
                             "dehydratedState": {
-                                "queries": [{
-                                    "queryKey": ["feed", "vehicles", "search"],
-                                    "state": {
-                                        "data": {
-                                            "commercial": [],
-                                            "private": [],
-                                            "pagination": {"pages": 10, "total": 100}
-                                        }
+                                "queries": [
+                                    {
+                                        "queryKey": ["feed", "vehicles", "search"],
+                                        "state": {
+                                            "data": {
+                                                "commercial": [],
+                                                "private": [],
+                                                "pagination": {"pages": 10, "total": 100},
+                                            }
+                                        },
                                     }
-                                }]
+                                ]
                             }
                         }
                     }
@@ -256,16 +271,18 @@ class TestScrapingEdgeCases:
             "props": {
                 "pageProps": {
                     "dehydratedState": {
-                        "queries": [{
-                            "queryKey": ["feed", "vehicles", "search"],
-                            "state": {
-                                "data": {
-                                    "commercial": [{"token": "test-123", "price": "50000"}],
-                                    "private": [],
-                                    "pagination": {"pages": 100, "total": 1000}
-                                }
+                        "queries": [
+                            {
+                                "queryKey": ["feed", "vehicles", "search"],
+                                "state": {
+                                    "data": {
+                                        "commercial": [{"token": "test-123", "price": "50000"}],
+                                        "private": [],
+                                        "pagination": {"pages": 100, "total": 1000},
+                                    }
+                                },
                             }
-                        }]
+                        ]
                     }
                 }
             }
@@ -294,16 +311,18 @@ class TestScrapingEdgeCases:
             "props": {
                 "pageProps": {
                     "dehydratedState": {
-                        "queries": [{
-                            "queryKey": ["feed", "vehicles", "search"],
-                            "state": {
-                                "data": {
-                                    "commercial": [{"token": "test-123", "price": "50000"}],
-                                    "private": [],
-                                    "pagination": {"pages": 100, "total": 1000}
-                                }
+                        "queries": [
+                            {
+                                "queryKey": ["feed", "vehicles", "search"],
+                                "state": {
+                                    "data": {
+                                        "commercial": [{"token": "test-123", "price": "50000"}],
+                                        "private": [],
+                                        "pagination": {"pages": 100, "total": 1000},
+                                    }
+                                },
                             }
-                        }]
+                        ]
                     }
                 }
             }
@@ -315,10 +334,12 @@ class TestScrapingEdgeCases:
 </body></html>"""
 
         # First request succeeds, second raises KeyboardInterrupt
-        route.mock(side_effect=[
-            httpx.Response(200, text=html),
-            KeyboardInterrupt(),
-        ])
+        route.mock(
+            side_effect=[
+                httpx.Response(200, text=html),
+                KeyboardInterrupt(),
+            ]
+        )
 
         main(["--max-pages", "10"])
 
@@ -342,16 +363,18 @@ class TestPaginationLogic:
             "props": {
                 "pageProps": {
                     "dehydratedState": {
-                        "queries": [{
-                            "queryKey": ["feed", "vehicles", "search"],
-                            "state": {
-                                "data": {
-                                    "commercial": [{"token": "test-123", "price": "50000"}],
-                                    "private": [],
-                                    "pagination": {"pages": 5, "total": 50}
-                                }
+                        "queries": [
+                            {
+                                "queryKey": ["feed", "vehicles", "search"],
+                                "state": {
+                                    "data": {
+                                        "commercial": [{"token": "test-123", "price": "50000"}],
+                                        "private": [],
+                                        "pagination": {"pages": 5, "total": 50},
+                                    }
+                                },
                             }
-                        }]
+                        ]
                     }
                 }
             }

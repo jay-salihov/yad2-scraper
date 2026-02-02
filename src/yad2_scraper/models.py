@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import csv
-import io
 from dataclasses import dataclass, fields
 from typing import Any
 
@@ -68,7 +66,9 @@ class CarListing:
 
         # Tags list -> comma-separated string
         tags_list = raw.get("tags") or []
-        tags_str = ", ".join(str(t.get("text", t)) if isinstance(t, dict) else str(t) for t in tags_list)
+        tags_str = ", ".join(
+            str(t.get("text", t)) if isinstance(t, dict) else str(t) for t in tags_list
+        )
 
         # Cover image
         images = raw.get("images") or []

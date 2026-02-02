@@ -1,6 +1,7 @@
 """Unit tests for CarListing model and field extraction (Issues 3-9, 12)."""
 
 import pytest
+
 from yad2_scraper.models import CarListing
 
 

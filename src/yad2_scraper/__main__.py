@@ -26,7 +26,8 @@ def main(argv: list[str] | None = None) -> None:
         help="Maximum number of pages to scrape (default: all)",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Enable verbose (DEBUG) logging",
     )

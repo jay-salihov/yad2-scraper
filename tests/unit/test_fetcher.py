@@ -1,9 +1,10 @@
 """Unit tests for HTTP client and error handling (Issue 2)."""
 
-import pytest
 import httpx
+import pytest
 import respx
-from yad2_scraper.fetcher import Fetcher, BotDetectedError
+
+from yad2_scraper.fetcher import BotDetectedError, Fetcher
 
 
 @pytest.mark.unit
@@ -84,11 +85,13 @@ class TestBotDetection:
         """Should retry with backoff on 302 redirect."""
         # First two requests return 302, third returns 200
         route = respx.get("https://www.yad2.co.il/vehicles/cars")
-        route.mock(side_effect=[
-            httpx.Response(302, headers={"location": "/bot-check"}),
-            httpx.Response(302, headers={"location": "/bot-check"}),
-            httpx.Response(200, text="<html>Success</html>"),
-        ])
+        route.mock(
+            side_effect=[
+                httpx.Response(302, headers={"location": "/bot-check"}),
+                httpx.Response(302, headers={"location": "/bot-check"}),
+                httpx.Response(200, text="<html>Success</html>"),
+            ]
+        )
 
         fetcher = Fetcher()
         html = fetcher.fetch_page(1)
@@ -113,10 +116,12 @@ class TestBotDetection:
         """Should handle all redirect status codes (301, 302, 303, 307, 308)."""
         for redirect_code in [301, 302, 303, 307, 308]:
             route = respx.get("https://www.yad2.co.il/vehicles/cars")
-            route.mock(side_effect=[
-                httpx.Response(redirect_code, headers={"location": "/bot-check"}),
-                httpx.Response(200, text="<html>Success</html>"),
-            ])
+            route.mock(
+                side_effect=[
+                    httpx.Response(redirect_code, headers={"location": "/bot-check"}),
+                    httpx.Response(200, text="<html>Success</html>"),
+                ]
+            )
 
             fetcher = Fetcher()
             html = fetcher.fetch_page(1)

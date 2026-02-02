@@ -30,7 +30,7 @@ def extract_next_data(html: str) -> dict[str, Any]:
     """
     soup = BeautifulSoup(html, "html.parser")
     script = soup.find("script", id="__NEXT_DATA__")
-    if script is None or not script.string:
+    if script is None or not hasattr(script, "string") or not script.string:
         raise ValueError("__NEXT_DATA__ script tag not found — possible bot challenge page")
     return json.loads(script.string)
 
@@ -49,10 +49,7 @@ def parse_listings(html: str) -> PageResult:
     data = extract_next_data(html)
 
     queries = (
-        data.get("props", {})
-        .get("pageProps", {})
-        .get("dehydratedState", {})
-        .get("queries", [])
+        data.get("props", {}).get("pageProps", {}).get("dehydratedState", {}).get("queries", [])
     )
 
     feed_query = _find_feed_query(queries)

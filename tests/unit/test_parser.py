@@ -1,8 +1,10 @@
 """Unit tests for parser JSON extraction and listing parsing (Issue 11)."""
 
 import json
+
 import pytest
-from yad2_scraper.parser import extract_next_data, parse_listings, _find_feed_query
+
+from yad2_scraper.parser import _find_feed_query, extract_next_data, parse_listings
 
 
 @pytest.mark.unit
@@ -161,19 +163,21 @@ class TestParseListingsEdgeCases:
             "props": {
                 "pageProps": {
                     "dehydratedState": {
-                        "queries": [{
-                            "queryKey": ["feed", "vehicles", "search"],
-                            "state": {
-                                "data": {
-                                    "commercial": [
-                                        {"price": "50000"},  # No token
-                                        {"token": "valid-123", "price": "40000"}
-                                    ],
-                                    "private": [],
-                                    "pagination": {"pages": 1, "total": 1}
-                                }
+                        "queries": [
+                            {
+                                "queryKey": ["feed", "vehicles", "search"],
+                                "state": {
+                                    "data": {
+                                        "commercial": [
+                                            {"price": "50000"},  # No token
+                                            {"token": "valid-123", "price": "40000"},
+                                        ],
+                                        "private": [],
+                                        "pagination": {"pages": 1, "total": 1},
+                                    }
+                                },
                             }
-                        }]
+                        ]
                     }
                 }
             }
@@ -194,19 +198,21 @@ class TestParseListingsEdgeCases:
             "props": {
                 "pageProps": {
                     "dehydratedState": {
-                        "queries": [{
-                            "queryKey": ["feed", "vehicles", "search"],
-                            "state": {
-                                "data": {
-                                    "commercial": [
-                                        {"token": "good-123", "price": "40000"},
-                                        "invalid",  # Not a dict
-                                    ],
-                                    "private": [],
-                                    "pagination": {"pages": 1, "total": 2}
-                                }
+                        "queries": [
+                            {
+                                "queryKey": ["feed", "vehicles", "search"],
+                                "state": {
+                                    "data": {
+                                        "commercial": [
+                                            {"token": "good-123", "price": "40000"},
+                                            "invalid",  # Not a dict
+                                        ],
+                                        "private": [],
+                                        "pagination": {"pages": 1, "total": 2},
+                                    }
+                                },
                             }
-                        }]
+                        ]
                     }
                 }
             }
@@ -224,15 +230,7 @@ class TestParseListingsEdgeCases:
 
     def test_parse_listings_no_feed_query(self):
         """Should return empty result when no feed query found."""
-        next_data = {
-            "props": {
-                "pageProps": {
-                    "dehydratedState": {
-                        "queries": []
-                    }
-                }
-            }
-        }
+        next_data = {"props": {"pageProps": {"dehydratedState": {"queries": []}}}}
 
         html = f"""<!DOCTYPE html>
 <html><body>

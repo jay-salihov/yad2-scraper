@@ -1,7 +1,7 @@
 """Shared pytest fixtures for all test files."""
 
 import pytest
-from pathlib import Path
+
 from tests.fixtures import sample_data
 
 
