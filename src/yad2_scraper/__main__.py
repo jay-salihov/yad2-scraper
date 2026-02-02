@@ -49,15 +49,15 @@ def main(argv: list[str] | None = None) -> None:
 
     try:
         with Fetcher() as fetcher:
-            page = 0
+            page = 1
             while True:
                 # Stop if we've hit the user-specified page limit
-                if args.max_pages is not None and page >= args.max_pages:
+                if args.max_pages is not None and page > args.max_pages:
                     log.info("Reached --max-pages limit (%d)", args.max_pages)
                     break
 
                 # Stop if we've gone past the last page (known after first fetch)
-                if total_pages is not None and page >= total_pages:
+                if total_pages is not None and page > total_pages:
                     log.info("Reached last page (%d)", total_pages)
                     break
 

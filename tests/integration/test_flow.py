@@ -66,10 +66,8 @@ class TestIssue1Pagination:
 
         route.mock(side_effect=custom_response)
 
-        # Run main with max-pages=1
-        # Currently this will FAIL because it starts at page 0
-        with pytest.raises(httpx.HTTPStatusError):
-            main(["--max-pages", "1"])
+        # Run main with max-pages=1 — should fetch page 1 successfully
+        main(["--max-pages", "1"])
 
     @respx.mock
     def test_max_pages_counts_pages_fetched_not_index(self, tmp_path, monkeypatch):
@@ -121,8 +119,7 @@ class TestIssue1Pagination:
 
         main(["--max-pages", "3"])
 
-        # Should fetch exactly 3 pages: 0, 1, 2 (currently)
-        # After fix: should fetch pages 1, 2, 3
+        # Should fetch exactly 3 pages: 1, 2, 3
         assert len(pages_fetched) == 3
 
 
@@ -200,7 +197,7 @@ class TestScrapingEdgeCases:
                     page_param = value
                     break
 
-            if page_param == "0":
+            if page_param == "1":
                 # First page with data
                 next_data = {
                     "props": {
@@ -385,6 +382,5 @@ class TestPaginationLogic:
 
         main([])
 
-        # Should fetch 5 pages (or fail at page 0 if bug exists)
-        # After fix: should fetch pages 1-5
+        # Should fetch pages 1-5
         assert route.call_count == 5
