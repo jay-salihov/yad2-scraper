@@ -1,5 +1,7 @@
 """Unit tests for HTTP client and error handling (Issue 2)."""
 
+from unittest.mock import patch
+
 import httpx
 import pytest
 import respx
@@ -76,12 +78,13 @@ class TestFetcherBasics:
         assert "page=5" in str(request.url)
 
 
+@patch("yad2_scraper.fetcher.time.sleep")
 @pytest.mark.unit
 class TestBotDetection:
     """Test bot detection and retry logic."""
 
     @respx.mock
-    def test_fetch_page_302_retries_with_backoff(self):
+    def test_fetch_page_302_retries_with_backoff(self, _mock_sleep):
         """Should retry with backoff on 302 redirect."""
         # First two requests return 302, third returns 200
         route = respx.get("https://www.yad2.co.il/vehicles/cars")
@@ -100,7 +103,7 @@ class TestBotDetection:
         assert route.call_count == 3
 
     @respx.mock
-    def test_fetch_exhausts_retries_raises_bot_detected(self):
+    def test_fetch_exhausts_retries_raises_bot_detected(self, _mock_sleep):
         """Should raise BotDetectedError after max retries."""
         # Always return 302
         respx.get("https://www.yad2.co.il/vehicles/cars").mock(
@@ -112,7 +115,7 @@ class TestBotDetection:
             fetcher.fetch_page(1)
 
     @respx.mock
-    def test_fetch_handles_all_redirect_codes(self):
+    def test_fetch_handles_all_redirect_codes(self, _mock_sleep):
         """Should handle all redirect status codes (301, 302, 303, 307, 308)."""
         for redirect_code in [301, 302, 303, 307, 308]:
             route = respx.get("https://www.yad2.co.il/vehicles/cars")
