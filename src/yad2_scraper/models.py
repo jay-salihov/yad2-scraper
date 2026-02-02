@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import csv
-import io
 from dataclasses import dataclass, fields
 from typing import Any
 
@@ -63,19 +61,37 @@ class CarListing:
                     return ""
             return str(obj) if obj is not None else ""
 
+        def nested_text(key: str) -> str:
+            """Extract 'text' from a nested dict field, or stringify scalars."""
+            val = raw.get(key)
+            if isinstance(val, dict):
+                return str(val.get("text", "")) if val.get("text") is not None else ""
+            return str(val) if val is not None else ""
+
+        def nested_id(key: str) -> str:
+            """Extract 'id' from a nested dict field."""
+            val = raw.get(key)
+            if isinstance(val, dict):
+                return str(val.get("id", "")) if val.get("id") is not None else ""
+            return ""
+
         # Payment info lives under metaData.financingInfo
         fin = raw.get("metaData", {}).get("financingInfo") or {}
 
-        # Tags list -> comma-separated string
+        # Tags list -> comma-separated string (use 'name' field, fall back to 'text')
         tags_list = raw.get("tags") or []
-        tags_str = ", ".join(str(t.get("text", t)) if isinstance(t, dict) else str(t) for t in tags_list)
+        tags_str = ", ".join(
+            str(t.get("name", t.get("text", t))) if isinstance(t, dict) else str(t)
+            for t in tags_list
+        )
 
-        # Cover image
-        images = raw.get("images") or []
-        cover_url = images[0].get("src", "") if images else ""
+        # Images from metaData
+        metadata = raw.get("metaData") or {}
+        images = metadata.get("images") or []
+        cover_url = str(metadata.get("coverImage", "")) if metadata.get("coverImage") else ""
 
         # Commitments
-        commitments_list = raw.get("metaData", {}).get("commitments") or []
+        commitments_list = metadata.get("commitments") or []
         commitments_str = ", ".join(
             str(c.get("text", c)) if isinstance(c, dict) else str(c) for c in commitments_list
         )
@@ -85,31 +101,31 @@ class CarListing:
             order_id=g("orderId"),
             ad_type=ad_type,
             listing_source=g("listingSource"),
-            manufacturer=g("manufacturer"),
-            manufacturer_id=g("manufacturerId"),
-            model=g("model"),
-            model_id=g("modelId"),
-            sub_model=g("subModel"),
-            sub_model_id=g("subModelId"),
-            year=g("year"),
-            engine_type=g("engineType"),
-            engine_type_id=g("engineTypeId"),
+            manufacturer=nested_text("manufacturer"),
+            manufacturer_id=nested_id("manufacturer"),
+            model=nested_text("model"),
+            model_id=nested_id("model"),
+            sub_model=nested_text("subModel"),
+            sub_model_id=nested_id("subModel"),
+            year=g("vehicleDates", "yearOfProduction"),
+            engine_type=nested_text("engineType"),
+            engine_type_id=nested_id("engineType"),
             engine_volume_cc=g("engineVolume"),
-            hand=g("hand"),
+            hand=nested_text("hand"),
             hand_number=g("handNumber"),
             price=g("price"),
             advance_payment=str(fin.get("advancePayment", "")) if fin else "",
             monthly_payment=str(fin.get("monthlyPayment", "")) if fin else "",
             number_of_payments=str(fin.get("numberOfPayments", "")) if fin else "",
             balance=str(fin.get("balance", "")) if fin else "",
-            area=g("area"),
-            area_id=g("areaId"),
+            area=g("address", "area", "text"),
+            area_id=g("address", "area", "id"),
             image_count=str(len(images)),
             cover_image_url=cover_url,
             tags=tags_str,
-            agency_name=g("agency", "name"),
-            agency_customer_id=g("agency", "customerId"),
+            agency_name=g("customer", "agencyName"),
+            agency_customer_id=g("customer", "id"),
             commitments=commitments_str,
-            has_trade_in=g("metaData", "tradeIn"),
+            has_trade_in=g("packages", "isTradeInButton"),
             priority=g("priority"),
         )

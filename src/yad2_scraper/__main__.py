@@ -26,17 +26,23 @@ def main(argv: list[str] | None = None) -> None:
         help="Maximum number of pages to scrape (default: all)",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Enable verbose (DEBUG) logging",
     )
     args = parser.parse_args(argv)
 
+    level = logging.DEBUG if args.verbose else logging.INFO
+
     logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.INFO,
+        level=logging.INFO,
         format="%(asctime)s %(levelname)-8s %(name)s — %(message)s",
         datefmt="%H:%M:%S",
     )
+
+    # Explicitly set our logger level (basicConfig may be a no-op if handlers exist)
+    log.setLevel(level)
 
     all_listings: list[CarListing] = []
     total_pages: int | None = None

@@ -78,7 +78,7 @@ class Fetcher:
                     BACKOFF_MAX_RETRIES + 1,
                 )
                 if attempt < BACKOFF_MAX_RETRIES:
-                    backoff = BACKOFF_BASE * (2 ** attempt)
+                    backoff = BACKOFF_BASE * (2**attempt)
                     log.info("Backing off %.0fs", backoff)
                     time.sleep(backoff)
                     continue
