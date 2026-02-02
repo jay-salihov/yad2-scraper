@@ -44,12 +44,16 @@ CLI (argparse in __main__.py)
 
 ## Implementation Status
 
-**Done**: config.py (URLs, params, headers, delays), models.py (CarListing dataclass)
-
-**Not yet implemented**: parser.py, fetcher.py, exporter.py, __main__.py, Dockerfile
-
-The full implementation plan is in `scraping-implementation-plan.md`.
+The full implementation plan and status is in `scraping-implementation-plan.md`.
+Testing suite implementation plan and status is in 'testing-suite-implementation.md'
 
 ## Search Parameters (config.py)
 
 Year 2020-2023, price 20,000-60,000 NIS, petrol/diesel engines, automatic transmission only. Pagination: pages 0-34, ~40 listings per page, ~1,347 total.
+
+## Version Control
+
+- the project is version controlled on github
+- use feature branches when developing new features
+- commit often
+- main branch should always have a fully tested and working version
