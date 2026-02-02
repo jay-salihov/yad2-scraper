@@ -23,3 +23,11 @@ output/
 
 # Claude Code (keep CLAUDE.md)
 .claude/
+
+# Testing artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+*.pyc
+__pycache__/
+.venv/
