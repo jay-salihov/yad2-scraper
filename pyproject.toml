@@ -8,8 +8,8 @@ version = "0.1.0"
 description = "Scrape used car listings from yad2.co.il and export to CSV"
 requires-python = ">=3.11"
 dependencies = [
-    "httpx[http2]>=0.27",
-    "beautifulsoup4>=4.12",
+    "httpx[http2]>=0.28.1",
+    "beautifulsoup4>=4.14.3",
 ]
 
 [project.scripts]
